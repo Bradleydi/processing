@@ -1,0 +1,14 @@
+\chapter{Introduction}
+The package \emph{colloid} 0.9 is used to analyze the experimental data obtained from colloidal systems.
+
+This package requires those packages to be installed first: BLAS, LAPACK, FFTW. Make sure unistd.h is available.
+
+The data is passed as arrays, and saved and read through \emph{gdf} format. The detail format information can be seen in io.h and io.cpp, and the core of data passing is done by classes and functions in colloid\_base.h and colloid\_base.cpp. All program should include them as the data I/O and data type.
+
+Some statistics functions is in \emph{statistics}. A few functions are added in \emph{miscellaneous}, such as sort, fitting. FFT is in a separate place so that one can able/disable FFT easily. Image analysis part is so far based on Magick++.
+
+All other codes can be seen as packages as the extension of the core. Different packages can be added/removed without affecting others. Those are normal modes, or elasticity.
+
+Some functions has been documented and the documents can be found in the corresponding header file.
+
+Linux command line interfaces are stored in functions/. Run the batch\_compile and make sure the link in compile\_and\_run is correct.

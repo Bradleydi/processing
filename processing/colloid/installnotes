@@ -1,0 +1,6 @@
+1. unzip to colloidcodes/colloid
+2. go to colloidcodes/colloid, run command: make
+3. run 'batchcompile' under colloid/functions
+4. run command: export LD_LIBRARY_PATH=/home2/bliaf/colloidcodes/colloid:$LD_LIBRARY_PATH
+5. go to colloid/functions, use 'chmod +x filename' to change the filename to global commands
+6. copy the global commands to 'home2/bliaf/bin'

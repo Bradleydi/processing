@@ -1,0 +1,132 @@
+2012, 08, 22 
+Revise src/normalmode/uur, to calculate the total uur, and also rescaled it by
+C0.
+
+2012, 08, 26
+It seems that if we put functions protype in same header file, and functions 
+in different folders, those files cannot have same name, even functions in 
+them have different names, or a multiple definition error will occor.
+
+2012, 09, 04
+'e_normalmode' for normal modes of ellipsoids has been implimented. However,
+several issues are still waiting for a solution.
+In this version of implementation, I accept the missing data. Even the missing
+is highly correlated both in space and time, I still treat them as random.
+Hence I need a more accuarate method to calculate covariance matrix for missing
+data set. The second issue is that, how to plot the mode in a more beatiful
+way. The last issue is how to explain the data, and what's the expectation?
+The angle part of normal mode may be antiphase, hence I need some method
+to deal with that. Also I need to unify the color bar.
+
+2012, 09 17
+'showposition': 
+add "set tmargin at screen 0.95" to make the size of the plot bigger.
+
+'traj_length':
+remove "set autoscale", use xmin, xmax, ... to make the plot scale well, and
+add "set tmargin at screen 0.95" to make the size of the plot bigger.
+Add t1 t2 to avoid the initial frame not starting from 0.
+Add doc to traj_length
+Add pointsize to control pointsize avoid too many particles
+
+2012, 10,04
+'e_plot_mode2'
+plot translational part of normal mode as vectors, and orientational part
+as colored ellipse, so that one can see the nematic domain with modes.
+The techneque is a old one, use parametic plot to plot ellipses.
+It seems that the resulted eps file is very large (32M >> 500k), and the quantity is also low.
+I'm not sure whether the new style 'with ellipse' in Gnuplot 4.6 can solve this
+problem, but anyway, it seems that to generate high quantity plot, one
+still need to plot directly into an EPS file.
+My own 'e_plot_config' to plot 5000 ellipses only has a size 300k.
+Anyway, the resulted figure still is better than the colored dots
+
+# Features, changes and fixes in gnuplot version 4.4
+# ==================================================
+# * NEW plot style "with circles"
+# * NEW object types circle, ellipse, and polygon
+
+So it seems that we can use Gnuplot (>=4.4) to illustrate simulation data, for
+circles, and Gnuplot (>=4.6) to illustrate simulations with ellipse.
+
+# * NEW operators '=' and ',' in expression syntax
+# * NEW command 'evaluate' executes commands from a string variable
+My recent implemented 'e_plot_mode2' cannot work with Gnuplot (<4.4).
+Since it uses '=' and ',', and 'eval'
+
+# * NEW variables GPVAL_VIEW_{MAP|ROT_X|ROT_Z|SCALE|ZSCALE}, GPVAL_TERMINALS
+It seems that in Gnuplot (>=4.4), we can use GPVAL_TERMINALS to control
+terminals we have, and set different plot parameters for different terminals.
+
+# * CHANGE syntax of 'set datafile binary' array= and record= options
+This is unsafe for my coding.
+Gnuplot will change itself version from version, so use Gnuplot in my code is
+not safe, if one day Gnuplot makes some major changes. However, Gnuplot is
+quite good, and there are lots of functions, so without it, coding will be
+very difficult.
+So now, I have to ways, one is install Gnuplot 4.6 to support 'with ellipse';
+the other is to learn how to draw palette to assign a RGB color to a value,
+and then use PS laguange to plot the modes. Arrays, ellipses have been known
+how to draw, only color not. If use gray, it may be easy, rgb, difficult.
+
+'e_plot_mode'
+the syntax of the interface is changed, to plot with colored ellipses, not
+dots.
+
+
+2012, 10, 05
+'e_corr'
+* NEW add 'e_corr' to calculate correlations between trans. and orien. part.
+It seems that the definition is quite difficult.
+If we use length as the trans. part, then orien. should also use 'length', i.e.
+ ABS(angle), and this correlation accounts for the correlation of amplitudes.
+
+To calculate the true correlation, ev... (lost swap file here due to connection
+error)
+
+2012, 10, 25
+'drift_llr'
+* NEW add 'drift_llr' to smooth the drift by local linear regression (LLR)
+This algorithm is new, and drift is gotten from two successive frames, by
+comparing particles existing in both frames.
+This feature is called by old 'ptid_drift' command, just to make it convenient
+for users. Use -l or -L to run this feature, and use -d to specify dimension.
+Dimension has been implemented to any for calculation, and 1-3 for plotting.
+-s to specify the smooth/band width parameter. As a good practice, it's better
+to use ptid_drift with old linear fitting as the beginning, to capture the 
+feature of the drift. Because this program is faster (1/3 faster than that
+with LLR). And then determine the smooth parameter. Set it to roughly 10%-20%
+time window width as a good candidate.
+I need two more things to do,
+1. remove drift part
+2. documentation of this part.
+This is quite a good job today...
+
+2012, 11, 01
+'e_softspot'
+* NEW add  'e_softspot' to plot the soft spots for ellipses glasses or crystals.
+The results seem good, but there is still something to improve.
+The outliers seem always to exist in glass, so that the plot is affect a lot.
+I don't know whether those outliers are from the rearrangement, or just
+highly localized modes. This needs my new program 'e_chkRearrange'.
+This new feature is used as a new separated command, 'e_softspot'.
+Ran's data seems that the soft spots are large clusters,
+while Zhongyu's data seems that the translational SPs are dispersed, without
+forming clusters, while there is no orientional SP.
+According to literature, rearrangement is also called irreversible 
+reorganization (IR), so I can made the program named 'e_chkIR'.
+
+2012, 12, 06
+'IR_SSD'
+'SSD'
+* NEW SSD is for steady state detection, hence can be used for irreversible 
+rearrangment (IR) detection.
+There are a few totally different algorithm for SSD. I tested two of them, also
+the hybrided case. However, it seems that what I implemented ( used the ratio
+of sum_squared of adjacent deviation and sum_squared of deviation from mean) is
+a better one, however, it's over sensitive.
+'IR_SSD' is included in the command 'IR'.
+
+* NEW add some selection functions in mis. could be used for median, median
+filter, outlier detection, median absolute deviation (MAD). 
+(see robust statistics)

@@ -1,0 +1,83 @@
+CC = g++
+
+CXXFLAGS=-O2 -fPIC -Wall -pedantic -c 
+
+MODULES=colloid_base \
+		data_preprocess \
+		dct \
+		dynamics \
+		elasticity \
+		ellipsoid_normalmode \
+		fftw \
+		image_analysis \
+		io \
+		lapack \
+		Magick \
+		miscellaneous \
+		normalmode \
+		plot \
+		qchi4  \
+		statistics \
+		structure 
+SRC_DIR=$(addprefix src/,$(MODULES))
+BUILD_DIR=$(addprefix build/,$(MODULES))
+
+SRC=$(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
+OBJ= $(patsubst src/%.cpp,build/%.o,$(SRC))
+INCLUDES=-I./include #$(addprefix -I,$(SRC_DIR))
+
+vpath %.cpp $(SRC_DIR)
+
+define make-goal
+$1/%.o: %.cpp
+	$(CC) $(CXXFLAGS) $(INCLUDES) $$< -o $$@
+endef
+
+.PHONY: all checkdirs clean
+
+all: checkdirs build
+
+build: $(OBJ)
+	$(CC) -shared -Wl,-soname,libcolloid.so -o libcolloid.so $^ -llapack -lblas `Magick++-config --cxxflags --cppflags --ldflags --libs` -lfftw3
+
+#=======================================================
+#=======================================================
+# include lapack
+#build/lapack/lapack.o : src/lapack/lapack.cpp
+#	$(CC) $(CXXFLAGS) $(INCLUDES) $< -o $@ -llapack -lblas
+
+##build/normalmode/normalmode.o : src/normalmode/normalmode.cpp
+##	$(CC) $(CXXFLAGS) $(INCLUDES) $< -o $@ -llapack -lblas
+
+#=======================================================
+#=======================================================
+# include Magick++
+##Magick_MODULES=Magick
+##Magick_SRC_DIR=$(addprefix src/,$(Magick_MODULES))
+##Magick_BUILD_DIR=$(addprefix build/,$(Magick_MODULES))
+##Magick_SRC=$(wildcard $(Magick_SRC_DIR)/*.cpp)
+##Magick_OBJ= $(patsubst src/%.cpp,build/%.o,$(Magick_SRC))
+build/Magick/Magick.o : src/Magick/Magick.cpp
+	$(CC) $(CXXFLAGS) $(INCLUDES) $< -o $@ `Magick++-config --cxxflags --cppflags --ldflags --libs`
+
+#=======================================================
+#=======================================================
+# include fftw3
+#build/fftw/fft1dr.o : src/fftw/fft1dr.cpp
+#	$(CC) $(CXXFLAGS) $(INCLUDES) $< -o $@ -lfftw3
+
+#build/fftw/fft2dr.o : src/fftw/fft2dr.cpp
+#	$(CC) $(CXXFLAGS) $(INCLUDES) $< -o $@ -lfftw3
+
+#=======================================================
+#=======================================================
+
+checkdirs: $(BUILD_DIR)
+
+$(BUILD_DIR):
+	@mkdir -p $@
+
+clean:
+	@rm -rf $(BUILD_DIR)
+
+$(foreach bdir,$(BUILD_DIR),$(eval $(call make-goal,$(bdir))))

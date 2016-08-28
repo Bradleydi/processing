@@ -1,0 +1,30 @@
+#include "miscellaneous.h"
+
+using namespace std;
+
+double pairwise(int n, double *a)
+{
+	int i, m=n, p=m/2;
+	double *d=(double *)malloc(n*sizeof(double));
+	double *b=d, *c=d;
+	while (m!=1)
+	{
+		for (i=0; i<p; i++)
+		{
+			*(b++)=*c+*(c+1);
+			c+=2;
+		}
+		if (m%2==1)
+		{
+			*b=*c;
+			++p;
+		}
+		m=p;
+		p=m/2;
+		b=d;
+		c=d;
+	}
+	double sum=*d;
+	free(d);
+	return sum;
+}

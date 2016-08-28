@@ -1,0 +1,82 @@
+\chapter{Package: ellipsoid\_normalmode}
+\section{Theory}
+The Langevin's equation for a 1D Brownian particle diffusing in potential well $U(x)=Kx^2/2$ can be written as
+\begin{equation}
+M\ddot{x}=-Kx-\gamma\dot{x}+\eta,
+\label{eq:mode}
+\end{equation}
+where $\eta$ is the white noise, satisfying $\langle \eta(t) \rangle=0$, $\langle \eta (t) \eta(t') \rangle =2\gamma k_BT$.
+\begin{itemize}
+\item At the overdampped limit, $M\ddot{x}\approx0$, so $-Kx-\gamma\dot{x}+\eta=0$, and the mode is called relaxation mode with decay rate $K/\gamma$.
+\item If there is no water, $\gamma=0$, so that the equation $M\ddot{x}=-Kx$ gives a vibrational mode with frequency $\sqrt{K/M}$.
+\end{itemize}
+
+The Langevin's equation for a general colloidal crystal or glass system consisting of $n$ degrees of freedom can be written as
+\begin{equation}
+\VEC{M}\ddot{\VEC{x}}=-\VEC{Kx}-\VEC{\Gamma}\dot{\VEC{x}}+\VEC{\eta},
+\end{equation}
+where $\VEC{x}$ is the displacement of each particle from their equilibrium position, $\VEC{K}$ describes the interaction of particles, e.g. charge force, $\VEC{\Gamma}$ describes the hydrodynamics interaction, caused by motions in water. 
+In general, the degrees of freedom can be translational or rational, so they have different $M$ and $\gamma$, in this way $\VEC{M}$ can be not written as $M/\gamma\VEC{\Gamma}$, and $\VEC{M}, \VEC{K}, \VEC{\Gamma}$ can not commute with each other. So even the equation is linear, the modes are coupled and there is no isolated modes shown in Eq.~\ref{eq:mode} in general (The isolated modes are composition of positions and velocities). However, in the following case, the modes are decoupled:
+\begin{itemize}
+\item At the overdampped limit, $\VEC{M}\ddot{\VEC{x}}\approx0$, so the relaxation mode is determined by $\VEC{K}$ and $\VEC{\Gamma}$.
+\item In vacuum, the vibrational mode is determined by $\VEC{M}$ and $\VEC{K}$.
+\end{itemize}
+
+So in general, relaxiation modes are very different from the vibrational modes.
+
+\section{Numerical procedure}
+No matter in which case, one needs to obtain eigenvalues and eigenvectors of two symmetry matrices:
+\begin{equation}
+Ae=\lambda Be.
+\end{equation}
+Since $B$ are symmetric, so $B=RR^T$, and one obtains
+\begin{equation}
+R^{-1}AR^{-T}(R^Te)=\lambda(R^Te),
+\end{equation}
+by solving the eigenvalues of $R^{-1}AR^{-T}$, one gets $\lambda$ and the corresponding $R^Te$.
+
+$\VEC{K}$ can be obtain in terms of displacement covariance matrix $\VEC{C}=\{\langle x_ix_j\rangle\}$:
+\begin{equation}
+\VEC{C}=k_BT\VEC{K}^{-1}.
+\end{equation}
+
+\section{Library routines}
+Remark: Even all files are .cpp, codes are in fact in pure C. Since the whole library calls Magick++ for image processing, which uses C++, so to simplify the Makefile and compilation, C++ suffix is used instead.
+
+In the current library, only vibrational modes of ellipsoidal glasses are implemented.
+
+The header files are in \emph{include/normalmode.h}.
+
+Core functions:
+\begin{itemize}
+\item \emph{e\_normalmode.cpp}: core function for calculation of normal modes.
+\item \emph{e\_DOS.cpp}: density of state (DOS)
+\item \emph{e\_DOS\_log.cpp}: DOS in log scale, binned logarithmically
+\item \emph{e\_P.cpp}: participation of translational/rotational motions in modes
+\item \emph{e\_PR.cpp}: participation ratio
+\item \emph{e\_softspot.cpp}: identify soft spots
+\item \emph{e\_corr.cpp}: spatial correlations for modes
+\end{itemize}
+
+Plottings:
+\begin{itemize}
+\item \emph{e\_plot\_config.cpp}: plot configurations of ellipsoidal glass
+\item \emph{e\_plot\_mode.cpp}: plot modes with Gnuplot
+\item \emph{e\_plot\_mode2.cpp}: plot modes with postscript
+\item \emph{e\_plot\_mode3.cpp}: plot modes
+\item \emph{e\_plot\_mode4.cpp}: plot modes
+\end{itemize}
+
+I/O:
+\begin{itemize}
+\item \emph{e\_dcm\_io.cpp}: displacement correlation function I/O
+\item \emph{e\_ev\_io.cpp}: eigenvalue and eigenvector I/O
+\item \emph{e\_mp\_io.cpp}: mean position (approximately the equilibrium sites) I/O
+\end{itemize}
+
+Data process:
+\begin{itemize}
+\item \emph{wrap\_angle.cpp}: wrap the angle for periodic boundary conditions
+\end{itemize}
+
+Each function has a Unix-interface stored in \emph{functions/}. Those functions can be served either as examples of using the library, or user interface in command line modes. Using of those functions can be found by running those commands without arguments.

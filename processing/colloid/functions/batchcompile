@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# compile colloid c++ program
+#
+
+LDIR="${HOME}/software/package/colloid"
+
+for f in ${LDIR}/functions/*.cpp
+do
+	echo $f
+	file=${f%.*}
+	echo $file
+	#if [ -f ${HOME}/bin/${file} ]; then
+	#	echo "${file} exists!"
+	#	exit 1
+	#fi
+	g++ ${file}.cpp -I${LDIR}/include -L${LDIR} -lcolloid -o ${file}
+	mv ${file} ${HOME}/bin/
+done
+
+exit 0

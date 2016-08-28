@@ -1,0 +1,175 @@
+===============================================================================
+2012, Jul, 20 	DONE
+===============================================================================
+1. traj_plot gdfdata [t0:[dt:]t1]
+---------------------------------
+I need to show trajectories since sometimes, tracking is not good enough,
+hence an image-assistant analysis is necessary.
+Just like most people showed 10s trajectories purely from xyt data, I need 
+to add more information, to show the trendancy of each particle.
+I can use color (rainbow) to show the tagged time, red for old one, and blue
+for lastest one. The time window is given by t0 and t1, and resolution is given
+by dt.
+
+2. traj_plot gdfdata timewindow [t0:[dt:]t1]
+--------------------------------------------
+same as above, and the only different thing is that this function gives a 
+dynamic figure that time is flowing, and oldest particles disappear and new
+ones come out. The color is shifted also.
+Here t0 and t1 is the beginning and end of the frame for the dynamic showing,
+and should not be confused with the above one.
+Maybe a modification should be done to combine the two or unify the two ones.
+
+Remark: I want to use those functions to analysis the flux (particle flow) in
+Peng Yi's solid-solid transition data. The data can hardly track well, and
+flux cannot be calculated accurately. Hence an image-assistant analysis is
+quite necessary.
+I have already written a progam "config_plot" for showwing particle positions
+in each frame, it should be equal to "traj_plot gdfdata timewindow=1".
+
+--------------------------------------------------
+2012, Jul, 26
+I have implimented such a program, with unified functions. However, the plot
+part is extramely slow. I have tested it by typical data, and found that
+the plot part can not work properly, as expected.
+The only useful part is the static part, however, since the data is removed
+after excuting the program, hence a detail zoom in is unavaible at last.
+Since generally speaking, this program is completely a failure for the supported functions.
+
+===============================================================================
+2012, Jul, 26
+===============================================================================
+1. sk
+The program is needed to be fixed.
+(Aug 6, 2012)
+I add the key part of points2image program into sk, to make the plot more smooth. I found that without this part, the 2D sk is OK, however, the angular averaged sk is quite bad (not due to the statistics for sure).
+The results is not better at all even I account for such above part.
+So what's the problem???
+
+===============================================================================
+2012, Aug, 13
+===============================================================================
+1. track
+2. feature
+3. 3D msd
+4. refine normal mode part
+5. add doc
+
+I need to first finish analysising Zhongyu's ellipsoids' data (maybe with Li Bo)
+Due to bad tracking (usually bad), I need to write a program can handle missing particles.
+May be I can interoplate the position for those missing particles. I need the program to be adaptive.
+Hence first I need a program to found out particles with long trajectories. If short, the crop those particles.
+Then interoplate the missing particles to make the data better (artificial effects may come into)
+And the last, traditional normal modes analysis.
+
+
+===============================================================================
+2012, Sep, 10
+===============================================================================
+feature
+track
+dos for ellipsoidal data
+Missing data covariance matrix
+Msd (111) and all in 3D
+Handle periodic data
+Normal mode plot for ellipsoidal system
+g(vect(r)) of ellipsoidal data
+Decomposition of displacement into long- and short- aixes of ellopsoidal data
+Q2, chi4
+Sk window
+dynamicL
+Find ptcl-exchange loops in superheated crystals
+Showposition should be revised, especially its interface… (factor)
+In future, when plot configurations with other quantities, the boundary is chosen not as [xmin-5:xmax+5]x [ymin-5:ymax+5]. It should be [xmin-aLx:xmax+aLx]x [ymin-aLy:ymax+aLy], where a=5%(more or less) and Lx=xmax-xmin, Ly=ymax-ymin. In this way, the size will be scaled to a better one. Try to use relative ratio, not absolute value in future. (Both for colloid and simulations) [affected program: plot_config, config_plot, plot_...
+
+
+6:30pm pt_info has a bug when dim is given
+Bug fixed.
+
+FIFO has a limit size PIPE_BUF (4KB on Linux), a small 2D plot in pt_info 
+has 1.6 KB, hence FIFO cannot serve as the communication with Gnuplot.
+(P116, Advanced Linux Programming)
+
+===============================================================================
+2012, Sep, 11
+===============================================================================
+I revised the DOS of ellipsoidal normal modes, 'e_DOS'. I add a few codes to
+remove some outliers to make the distribution better.
+===============================================================================
+2012, Sep, 17
+===============================================================================
+'traj_length':
+remove "set autoscale", use xmin, xmax, ... to make the plot scale well, and
+add "set tmargin at screen 0.95" to make the size of the plot bigger
+===============================================================================
+2012, Sep, 18
+===============================================================================
+spline 2D data, interpolate, to get smooth plot of 2D data
+Draw an eps colorbar is too technical, so a better way is to spline 2D data
+
+Draw 2D eigenvector magnitudes of ellipses (cannot use dots, so spline 2D)
+Is this useful? Softspot?
+===============================================================================
+2012, Oct, 04
+===============================================================================
+'e_plot_config'
+should be revised to make the file ensucapted, so that included by other eps
+files will not go wrong.
+Add pageheader, gsave, grestore and so on.
+
+'e_
+===============================================================================
+2012, Nov, 20
+===============================================================================
+'SSD'
+steady state detection.
+
+'e_chkIR'
+check irresersible rearrangement (IR) in ellipsoidal glass/supercooled liquid.
+
+'e_corr'
+more things on correlations of modes and other physical quantities.
+===============================================================================
+2012, Nov 27
+===============================================================================
+I have an image sequence for image processing test, locating in
+PHZ086:~/normalmode_old/crystal
+===============================================================================
+2012, Dec 06
+===============================================================================
+'drift_llr'
+change the color of lines to make the comparision more clear.
+Documentation...
+
+'IR_SSD'
+It seems that SSD is very sensitive, and even I used a crystal data, with
+very small drift, and use 'showposition' can see good crystals, but 'IR_SSD'
+still said there are multiple equilibrium positions.
+So 'IR' should be modified to be more reliable.
+The data mentioned here is '/home/feng/normalmode/3Dslice/trkparticle_4603.gdf'
+
+It seems that bezier smooth in Gnuplot smooth the data quite good. Maybe
+I can implement it.
+I also tested that the IR_SSD result is quantitively consistent with the 
+raw data smoothed by 'bezier' smoothing.
+By plot the 'bezier' use points, it can be seen that the number of points 
+is reduced.
+===============================================================================
+2012, Dec 18
+===============================================================================
+Add a gdf viewer to debug the gdf dataset.
+
+An tracked data, cannot cropped by
+step 1. space_cut
+step 2. trajectory_filter
+The resulted data has wrong particle index. Fix the bug. Is this a bug???
+A new algorithm for space_cut
+select_indictor = [1 for all ptcl]
+if in any frame, a ptcl is not in the selected region, then set the indictor
+to 0, i.e. not select it.
+Then the remained ptcls are what we selected, and also they don't leave the
+selected spatial region.
+===============================================================================
+===============================================================================
+===============================================================================
+===============================================================================

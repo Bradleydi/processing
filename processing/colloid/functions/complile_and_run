@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# compile colloid c++ program
+#
+
+LDIR="${HOME}/colloid"
+
+
+if [ $# -eq 1 ]; then
+	file=${1%.*}
+	if [ -f ${HOME}/bin/${file} ]; then
+		echo "${file} exists!"
+		exit 1
+	fi
+	g++ ${file}.cpp -I${LDIR}/include -L${LDIR} -lcolloid -o ${file}
+	mv ${file} ${HOME}/bin/
+	exit 0
+elif [ $# -eq 2 -a "$2" == "-u" ]; then
+	file=${1%.*}
+	rm ${HOME}/bin/${file}
+	g++ ${file}.cpp -I${LDIR}/include -L${LDIR} -lcolloid -o ${file}
+	mv ${file} ${HOME}/bin/
+	exit 0
+elif [ $# -eq 2 -a "$1" == "-r" ]; then
+	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/colloid
+	./$2
+	exit 0
+fi
